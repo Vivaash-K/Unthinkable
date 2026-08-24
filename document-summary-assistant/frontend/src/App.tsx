@@ -33,11 +33,11 @@ export default function App() {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [error, setError] = useState<AppError | null>(null);
 
-  // Dark mode state persisted in localStorage
+  // Dark mode state persisted in localStorage (defaults to light mode)
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     const saved = localStorage.getItem('nutshell_theme');
     if (saved) return saved === 'dark';
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return false; // Default to Light Mode
   });
 
   // Apply dark mode class to HTML root

@@ -7,19 +7,19 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-sand-50 text-sand-900 dark:bg-espresso-950 dark:text-sand-100 antialiased min-h-screen selection:bg-brand-500 selection:text-white transition-colors duration-200;
+    @apply bg-[#F0E68C] text-sand-950 dark:bg-espresso-950 dark:text-sand-100 antialiased min-h-screen selection:bg-brand-600 selection:text-white transition-colors duration-200;
     font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   }
 }
 
-/* Custom subtle scrollbar in warm sand / dark espresso tones */
+/* Custom subtle scrollbar in khaki #F0E68C / dark espresso tones */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f5efe6;
+  background: #e2d77d;
 }
 
 .dark ::-webkit-scrollbar-track {
@@ -27,7 +27,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d6b797;
+  background: #b29d47;
   border-radius: 9999px;
 }
 
@@ -36,9 +36,9 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ab7847;
+  background: #7a6625;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #5a381f;
+  background: #553118;
 }

@@ -8,33 +8,33 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Warm Beige & Sand palette
+        // Khaki & Warm Beige palette (Base #F0E68C)
         sand: {
-          50: '#fbf9f5',
-          100: '#f5efe6',
-          200: '#ebdfd0',
-          300: '#ddc9b2',
-          400: '#caad8e',
-          500: '#b58f6b',
-          600: '#9b734e',
-          700: '#7c593c',
-          800: '#63452f',
-          900: '#483121',
-          950: '#281a11',
+          50: '#F0E68C', // Khaki light background
+          100: '#e8dc7e',
+          200: '#ddce6e',
+          300: '#cbb95c',
+          400: '#b29d47',
+          500: '#968134',
+          600: '#7a6625',
+          700: '#5e4e1a',
+          800: '#453811',
+          900: '#2e240a',
+          950: '#1a1405',
         },
-        // Brand: Toasted Caramel, Almond & Roasted Chestnut
+        // Brand: Roasted Chestnut, Toasted Walnut & Deep Amber Bronze
         brand: {
-          50: '#faf6f0',
-          100: '#f3eae0',
-          200: '#e6d3be',
-          300: '#d6b797',
-          400: '#c2966c',
-          500: '#ab7847',
-          600: '#906034',
-          700: '#734a28',
-          800: '#5a381f',
-          900: '#432917',
-          950: '#23140a',
+          50: '#faf5ee',
+          100: '#f2e7d7',
+          200: '#e4ceb4',
+          300: '#d2af8c',
+          400: '#bc8e63',
+          500: '#a5713f',
+          600: '#89562c',
+          700: '#6e4121',
+          800: '#553118',
+          900: '#3f2310',
+          950: '#221107',
         },
         // Deep Espresso & Obsidian for Dark Mode
         espresso: {
