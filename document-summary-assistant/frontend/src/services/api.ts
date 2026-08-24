@@ -12,22 +12,32 @@ const RAW_API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_BASE = RAW_API_BASE.replace(/\/+$/, '');
 
 async function handleResponse<T>(res: Response): Promise<T> {
+  const rawText = await res.text();
+  
   if (!res.ok) {
     let errorDetail = `Request failed with status ${res.status}`;
-    try {
-      const errJson = await res.json();
-      if (errJson && errJson.detail) {
-        errorDetail = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
-      } else if (errJson && errJson.message) {
-        errorDetail = errJson.message;
+    if (rawText) {
+      try {
+        const errJson = JSON.parse(rawText);
+        if (errJson && errJson.detail) {
+          errorDetail = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
+        } else if (errJson && errJson.message) {
+          errorDetail = errJson.message;
+        } else {
+          errorDetail = rawText;
+        }
+      } catch {
+        errorDetail = rawText;
       }
-    } catch {
-      const rawText = await res.text();
-      if (rawText) errorDetail = rawText;
     }
     throw new Error(errorDetail);
   }
-  return res.json() as Promise<T>;
+
+  try {
+    return JSON.parse(rawText) as T;
+  } catch (err) {
+    throw new Error(`Failed to parse server response: ${rawText.slice(0, 150)}`);
+  }
 }
 
 export async function checkHealth(): Promise<HealthStatus> {
