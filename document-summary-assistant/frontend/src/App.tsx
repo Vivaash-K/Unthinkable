@@ -1,76 +1,231 @@
-import React, { useState } from 'react'
-import Header from './components/Header'
-import FileUpload from './components/FileUpload'
-import SummaryResult from './components/SummaryResult'
+import React, { useState, useEffect } from 'react';
+import Header from './components/Header';
+import FileUpload from './components/FileUpload';
+import FilePreview from './components/FilePreview';
+import SummaryLengthSelector from './components/SummaryLengthSelector';
+import ProcessingStatus from './components/ProcessingStatus';
+import ExtractedTextViewer from './components/ExtractedTextViewer';
+import SummaryResult from './components/SummaryResult';
+import ErrorMessage from './components/ErrorMessage';
+import {
+  UploadedFileInfo,
+  ProcessResult,
+  SummaryResultData,
+  SummaryLength,
+  ProcessingStage,
+  AppError,
+  HealthStatus,
+} from './types';
+import {
+  uploadDocument,
+  processDocument,
+  summarizeDocument,
+  checkHealth,
+} from './services/api';
 
-function App() {
-  const [fileInfo, setFileInfo] = useState<{filename: string; type: string} | null>(null)
-  const [text, setText] = useState('')
-  const [summary, setSummary] = useState<any>(null)
-  const [length, setLength] = useState<'short'|'medium'|'long'>('short')
-  const [status, setStatus] = useState('idle')
+export default function App() {
+  const [health, setHealth] = useState<HealthStatus | null>(null);
+  const [fileInfo, setFileInfo] = useState<UploadedFileInfo | null>(null);
+  const [processResult, setProcessResult] = useState<ProcessResult | null>(null);
+  const [summaryResult, setSummaryResult] = useState<SummaryResultData | null>(null);
+  const [summaryLength, setSummaryLength] = useState<SummaryLength>('short');
+  const [stage, setStage] = useState<ProcessingStage>('idle');
+  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [error, setError] = useState<AppError | null>(null);
 
-  async function handleUpload(file: File) {
-    const fd = new FormData()
-    fd.append('file', file)
-    setStatus('uploading')
-    const res = await fetch('http://localhost:8000/api/upload', { method: 'POST', body: fd })
-    if (!res.ok) {
-      alert('Upload failed')
-      setStatus('idle')
-      return
+  // Initial health check
+  useEffect(() => {
+    checkHealth().then(setHealth);
+  }, []);
+
+  // Handle document upload and automatic text extraction
+  const handleFileSelected = async (file: File) => {
+    setError(null);
+    setSummaryResult(null);
+    setProcessResult(null);
+    setStage('uploading');
+    setStatusMessage(`Uploading ${file.name}...`);
+
+    try {
+      // 1. Upload File
+      const uploaded = await uploadDocument(file);
+      setFileInfo(uploaded);
+
+      // 2. Extract Text & OCR
+      setStage('extracting');
+      setStatusMessage('Extracting text & running OCR analysis...');
+      const processed = await processDocument(uploaded.filename);
+      setProcessResult(processed);
+
+      if (!processed.hasExtractedText || processed.wordCount === 0) {
+        setError({
+          title: 'No Text Extracted',
+          message:
+            processed.warning ||
+            'Could not extract readable text from this document. It may be empty or unreadable.',
+          suggestion: 'Try uploading a higher-resolution image or a text-based PDF.',
+        });
+        setStage('idle');
+        return;
+      }
+
+      setStage('idle');
+    } catch (err: any) {
+      console.error('Upload or process failed:', err);
+      setError({
+        title: 'Document Processing Failed',
+        message: err.message || 'An error occurred while uploading and extracting text.',
+        suggestion: 'Please check that the backend server is running and try again.',
+      });
+      setStage('idle');
     }
-    const data = await res.json()
-    setFileInfo({filename: data.filename, type: data.content_type})
-    setStatus('uploaded')
-  }
+  };
 
-  async function handleProcess() {
-    if (!fileInfo) return
-    setStatus('processing')
-    const fd = new FormData()
-    fd.append('filename', fileInfo.filename)
-    const res = await fetch('http://localhost:8000/api/process', { method: 'POST', body: fd })
-    if (!res.ok) { const text = await res.text(); alert(text); setStatus('idle'); return }
-    const data = await res.json()
-    setText(data.text)
-    setStatus('processed')
-  }
+  // Handle AI summary generation
+  const handleGenerateSummary = async () => {
+    if (!processResult || !processResult.text) {
+      setError({
+        title: 'Missing Document Text',
+        message: 'There is no extracted text to summarize.',
+        suggestion: 'Please upload a document first.',
+      });
+      return;
+    }
 
-  async function handleSummarize() {
-    if (!text) { alert('No extracted text'); return }
-    setStatus('summarizing')
-    const fd = new FormData()
-    fd.append('text', text)
-    fd.append('summaryLength', length)
-    const res = await fetch('http://localhost:8000/api/summarize', { method: 'POST', body: fd })
-    const data = await res.json()
-    setSummary(data)
-    setStatus('done')
-  }
+    setError(null);
+    setStage('analyzing');
+    setStatusMessage('Analyzing content structure & key concepts...');
+
+    // Small delay to show smooth multi-stage transition
+    setTimeout(async () => {
+      setStage('summarizing');
+      setStatusMessage('Synthesizing summary, key points, and main ideas...');
+
+      try {
+        const result = await summarizeDocument(processResult.text, summaryLength, 'auto');
+        setSummaryResult(result);
+        setStage('completed');
+      } catch (err: any) {
+        console.error('Summarize failed:', err);
+        setError({
+          title: 'Summary Generation Failed',
+          message: err.message || 'An error occurred while generating the summary.',
+          suggestion: 'Try selecting a different summary length or re-uploading the document.',
+        });
+        setStage('idle');
+      }
+    }, 450);
+  };
+
+  // Reset everything to upload a new document
+  const handleReset = () => {
+    setFileInfo(null);
+    setProcessResult(null);
+    setSummaryResult(null);
+    setStage('idle');
+    setError(null);
+    setStatusMessage('');
+  };
+
+  const isProcessing =
+    stage === 'uploading' ||
+    stage === 'extracting' ||
+    stage === 'analyzing' ||
+    stage === 'summarizing';
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <main className="max-w-4xl mx-auto p-4">
-        <FileUpload onUpload={handleUpload} fileInfo={fileInfo} onRemove={() => {setFileInfo(null); setText(''); setSummary(null)}} />
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-brand-500 selection:text-white">
+      {/* Header Bar */}
+      <Header health={health} />
 
-        <div className="mt-4">
-          <div className="flex gap-2">
-            <button className={`px-3 py-1 rounded ${length==='short'? 'bg-blue-600 text-white':'bg-white'}`} onClick={()=>setLength('short')}>Short</button>
-            <button className={`px-3 py-1 rounded ${length==='medium'? 'bg-blue-600 text-white':'bg-white'}`} onClick={()=>setLength('medium')}>Medium</button>
-            <button className={`px-3 py-1 rounded ${length==='long'? 'bg-blue-600 text-white':'bg-white'}`} onClick={()=>setLength('long')}>Long</button>
-            <button className="ml-auto px-4 py-2 bg-green-600 text-white rounded" onClick={handleProcess} disabled={!fileInfo}>Extract Text</button>
-            <button className="px-4 py-2 bg-indigo-600 text-white rounded" onClick={handleSummarize} disabled={!text}>Generate Summary</button>
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        {/* Error Alert Display */}
+        <ErrorMessage
+          error={error}
+          onDismiss={() => setError(null)}
+          onRetry={fileInfo && !processResult ? () => handleFileSelected(fileInfo as any) : undefined}
+        />
+
+        {/* Multi-stage Progress Stepper */}
+        {isProcessing && (
+          <div className="mb-8">
+            <ProcessingStatus stage={stage} statusMessage={statusMessage} />
           </div>
-          <div className="mt-3 text-sm text-gray-600">Status: {status}</div>
-        </div>
+        )}
 
-        {summary && <SummaryResult data={summary} />}
+        {/* Step 1: Upload Dropzone (shown when no file is uploaded and not in completed results) */}
+        {!fileInfo && !isProcessing && (
+          <div className="space-y-6">
+            <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+                Transform any document into actionable insights
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600">
+                Upload PDFs, scanned documents, or images. Our engine extracts the text and produces
+                concise, structured summaries with key takeaways in seconds.
+              </p>
+            </div>
 
+            <FileUpload
+              onFileSelected={handleFileSelected}
+              onError={(err) => setError(err)}
+              disabled={isProcessing}
+            />
+          </div>
+        )}
+
+        {/* Step 2: Document Loaded & Configuration Controls */}
+        {fileInfo && !isProcessing && (
+          <div className="space-y-6 animate-fade-in">
+            {/* File Info Bar */}
+            <FilePreview
+              fileInfo={fileInfo}
+              processResult={processResult}
+              onRemove={handleReset}
+              onReplace={handleFileSelected}
+              disabled={isProcessing}
+            />
+
+            {/* Extracted Text Collapsible Viewer */}
+            {processResult && processResult.hasExtractedText && (
+              <ExtractedTextViewer processResult={processResult} />
+            )}
+
+            {/* Summary Length Selector & Generate Action */}
+            {processResult && processResult.hasExtractedText && (
+              <SummaryLengthSelector
+                selectedLength={summaryLength}
+                onChange={(len) => {
+                  setSummaryLength(len);
+                }}
+                onGenerate={handleGenerateSummary}
+                isLoading={isProcessing}
+                disabled={!processResult.hasExtractedText || isProcessing}
+              />
+            )}
+
+            {/* Results Section */}
+            {summaryResult && (
+              <div className="pt-4">
+                <SummaryResult
+                  data={summaryResult}
+                  documentName={fileInfo.originalName}
+                  onReset={handleReset}
+                />
+              </div>
+            )}
+          </div>
+        )}
       </main>
-    </div>
-  )
-}
 
-export default App
+      {/* Footer */}
+      <footer className="border-t border-slate-200 bg-white/60 py-6 text-center text-xs text-slate-500">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>Document Summary Assistant • Production Quality AI Web App</span>
+          <span className="text-slate-400">PDF Parsing • Tesseract OCR • Structured Summarization</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
