@@ -221,10 +221,15 @@ def _try_parse_json(content: str) -> Optional[Dict[str, Any]]:
 
 def summarize_with_gemini(text: str, length: str) -> Optional[Dict[str, Any]]:
     """Summarize text using Google Gemini API."""
-    if not GEMINI_API_KEY or genai is None:
+    if not GEMINI_API_KEY:
+        logger.warning("summarize_with_gemini called but GEMINI_API_KEY is empty.")
+        return None
+    if genai is None:
+        logger.warning("summarize_with_gemini called but google.genai package is not available.")
         return None
 
     try:
+        logger.info(f"Initiating Google Gemini summarization for {len(text)} characters (mode: {length})...")
         client = genai.Client(api_key=GEMINI_API_KEY)
         length_instructions = {
             "short": "Generate a concise executive summary in approximately 3–5 sentences focusing only on the primary takeaway.",
@@ -254,28 +259,45 @@ Return your response strictly as a JSON object with this structure:
 Document Text:
 {text}
 """
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt,
-            config=genai_types.GenerateContentConfig(
-                temperature=0.2,
-                response_mime_type="application/json",
-            )
-        )
+        # Try current models
+        candidate_models = ["gemini-3.6-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
+        response = None
+        used_model = "gemini-3.6-flash"
 
-        parsed = _try_parse_json(response.text)
-        if parsed and "summary" in parsed:
-            stats = calculate_stats(text, parsed.get("summary", ""))
-            return {
-                "summary": parsed.get("summary", "").strip(),
-                "keyPoints": parsed.get("keyPoints", []) if isinstance(parsed.get("keyPoints"), list) else [],
-                "mainIdeas": parsed.get("mainIdeas", []) if isinstance(parsed.get("mainIdeas"), list) else [],
-                "stats": stats,
-                "providerUsed": "Google Gemini (gemini-2.5-flash)",
-                "summaryLength": length,
-            }
+        for model_name in candidate_models:
+            try:
+                logger.info(f"Attempting Gemini generation with model '{model_name}'...")
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt,
+                    config=genai_types.GenerateContentConfig(
+                        temperature=0.2,
+                        response_mime_type="application/json",
+                    )
+                )
+                if response and response.text:
+                    used_model = model_name
+                    logger.info(f"Successfully received response from Gemini model '{model_name}'.")
+                    break
+            except Exception as model_err:
+                logger.warning(f"Gemini model {model_name} failed: {model_err}")
+
+        if response and response.text:
+            parsed = _try_parse_json(response.text)
+            if parsed and "summary" in parsed:
+                stats = calculate_stats(text, parsed.get("summary", ""))
+                return {
+                    "summary": parsed.get("summary", "").strip(),
+                    "keyPoints": parsed.get("keyPoints", []) if isinstance(parsed.get("keyPoints"), list) else [],
+                    "mainIdeas": parsed.get("mainIdeas", []) if isinstance(parsed.get("mainIdeas"), list) else [],
+                    "stats": stats,
+                    "providerUsed": f"Google Gemini ({used_model})",
+                    "summaryLength": length,
+                }
+            else:
+                logger.warning(f"Failed to parse JSON from Gemini response: {response.text[:200]}")
     except Exception as e:
-        logger.warning(f"Gemini summarization attempt failed: {e}")
+        logger.error(f"Gemini summarization attempt failed: {e}", exc_info=True)
 
     return None
 

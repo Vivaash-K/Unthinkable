@@ -2,15 +2,17 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
-
 # Base directories
 APP_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = APP_DIR.parent
 ROOT_DIR = BACKEND_DIR.parent
 UPLOAD_DIR = BACKEND_DIR / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+# Load environment variables from both root and backend dirs
+load_dotenv(ROOT_DIR / ".env")
+load_dotenv(BACKEND_DIR / ".env")
+load_dotenv()
 
 # Application constants
 MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024  # 25 MB
