@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ListChecks, Check, Copy, Sparkles } from 'lucide-react';
+import { ListChecks, Check, Copy } from 'lucide-react';
 
 interface KeyPointsProps {
   keyPoints: string[];
@@ -18,33 +18,33 @@ export default function KeyPoints({ keyPoints }: KeyPointsProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm flex flex-col h-full">
+    <div className="bg-white dark:bg-espresso-900 rounded-2xl border border-sand-200 dark:border-espresso-700 p-6 shadow-sm flex flex-col h-full transition-colors">
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+      <div className="flex items-center justify-between pb-4 border-b border-sand-100 dark:border-espresso-800 mb-4">
         <div className="flex items-center space-x-2.5">
-          <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+          <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/60">
             <ListChecks className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-900">Key Points</h3>
-            <p className="text-xs text-slate-500">Essential insights & takeaways</p>
+            <h3 className="text-base font-bold text-sand-900 dark:text-sand-50">Key Points</h3>
+            <p className="text-xs text-sand-500 dark:text-sand-400">Essential insights & takeaways</p>
           </div>
         </div>
 
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 active:bg-slate-200 border border-slate-200/60 transition"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-sand-700 dark:text-sand-300 bg-sand-50 dark:bg-espresso-800 hover:bg-sand-100 dark:hover:bg-espresso-750 active:bg-sand-200 border border-sand-200 dark:border-espresso-700 transition"
           title="Copy key points to clipboard"
         >
           {copied ? (
             <>
-              <Check className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="text-emerald-700 font-semibold">Copied</span>
+              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span className="text-emerald-700 dark:text-emerald-300 font-semibold">Copied</span>
             </>
           ) : (
             <>
-              <Copy className="w-3.5 h-3.5 text-slate-500" />
+              <Copy className="w-3.5 h-3.5 text-sand-500 dark:text-sand-400" />
               <span>Copy</span>
             </>
           )}
@@ -56,9 +56,9 @@ export default function KeyPoints({ keyPoints }: KeyPointsProps) {
         {keyPoints.map((point, index) => (
           <li
             key={index}
-            className="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-50/60 border border-slate-100 text-xs sm:text-sm text-slate-700 leading-relaxed hover:bg-slate-50 transition"
+            className="flex items-start space-x-3 p-3 rounded-xl bg-sand-50/70 dark:bg-espresso-850 border border-sand-100 dark:border-espresso-800 text-xs sm:text-sm text-sand-800 dark:text-sand-200 leading-relaxed hover:bg-sand-100/70 dark:hover:bg-espresso-800 transition"
           >
-            <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold mt-0.5">
+            <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold mt-0.5 border border-emerald-200 dark:border-emerald-700">
               {index + 1}
             </span>
             <span className="flex-1">{point}</span>

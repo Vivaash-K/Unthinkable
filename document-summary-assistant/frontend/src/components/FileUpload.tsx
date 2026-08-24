@@ -1,5 +1,5 @@
 import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
-import { UploadCloud, File, Image as ImageIcon, FileCheck, AlertCircle } from 'lucide-react';
+import { UploadCloud, File, Image as ImageIcon, FileCheck } from 'lucide-react';
 import { AppError } from '../types';
 
 interface FileUploadProps {
@@ -68,6 +68,12 @@ export default function FileUpload({ onFileSelected, onError, disabled = false }
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
+  };
+
+  const handleDropInternal = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
 
     if (disabled) return;
 
@@ -82,7 +88,6 @@ export default function FileUpload({ onFileSelected, onError, disabled = false }
     if (files && files.length > 0) {
       validateAndPassFile(files[0]);
     }
-    // Reset value so the user can re-select the same file if desired
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -98,14 +103,14 @@ export default function FileUpload({ onFileSelected, onError, disabled = false }
     <div
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      onDrop={handleDropInternal}
       onClick={openFilePicker}
-      className={`relative group rounded-3xl border-2 border-dashed p-8 sm:p-12 text-center cursor-pointer transition-all duration-300 ${
+      className={`relative group rounded-3xl border-2 border-dashed p-8 sm:p-14 text-center cursor-pointer transition-all duration-300 ${
         disabled
-          ? 'bg-slate-50/60 border-slate-200 cursor-not-allowed opacity-60'
+          ? 'bg-sand-100/40 dark:bg-espresso-900/40 border-sand-300 dark:border-espresso-700 cursor-not-allowed opacity-60'
           : isDragging
-          ? 'bg-brand-50/80 border-brand-500 ring-4 ring-brand-500/20 scale-[1.01]'
-          : 'bg-white hover:bg-slate-50/80 border-slate-300/90 hover:border-brand-400 shadow-sm hover:shadow-md'
+          ? 'bg-brand-50 dark:bg-brand-950/60 border-brand-500 ring-4 ring-brand-500/20 scale-[1.01]'
+          : 'bg-white dark:bg-espresso-900 hover:bg-sand-50/60 dark:hover:bg-espresso-850 border-sand-300 dark:border-espresso-700 hover:border-brand-400 dark:hover:border-brand-500 shadow-sm hover:shadow-md'
       }`}
     >
       <input
@@ -122,8 +127,8 @@ export default function FileUpload({ onFileSelected, onError, disabled = false }
         <div
           className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
             isDragging
-              ? 'bg-brand-600 text-white scale-110 shadow-lg shadow-brand-500/30'
-              : 'bg-brand-50 text-brand-600 group-hover:bg-brand-100 group-hover:scale-105'
+              ? 'bg-brand-600 text-white scale-110 shadow-lg shadow-brand-600/30'
+              : 'bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 group-hover:bg-brand-200/80 dark:group-hover:bg-brand-900 group-hover:scale-105'
           }`}
         >
           <UploadCloud className="w-8 h-8" />
@@ -131,11 +136,11 @@ export default function FileUpload({ onFileSelected, onError, disabled = false }
 
         {/* Text guidance */}
         <div className="space-y-1.5 max-w-md">
-          <p className="text-base sm:text-lg font-semibold text-slate-800">
+          <p className="text-base sm:text-lg font-semibold text-sand-900 dark:text-sand-100">
             {isDragging ? 'Drop your document here' : 'Drag & drop your document here'}
           </p>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Upload a PDF, PNG, or JPEG file to automatically extract text and generate summaries.
+          <p className="text-xs sm:text-sm text-sand-500 dark:text-sand-400">
+            Upload a PDF, PNG, or JPEG file to extract text and generate summaries.
           </p>
         </div>
 
@@ -144,7 +149,7 @@ export default function FileUpload({ onFileSelected, onError, disabled = false }
           <button
             type="button"
             disabled={disabled}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm text-white bg-brand-600 hover:bg-brand-700 active:bg-brand-800 transition shadow-sm hover:shadow-brand-500/20 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm text-white bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 active:from-brand-700 active:to-brand-800 transition shadow-sm hover:shadow-brand-500/20 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
             onClick={(e) => {
               e.stopPropagation();
               openFilePicker();
@@ -156,14 +161,14 @@ export default function FileUpload({ onFileSelected, onError, disabled = false }
         </div>
 
         {/* Format Badges & Info */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 font-medium text-slate-600 border border-slate-200/60">
-            <File className="w-3 h-3 text-red-500" /> PDF Document
+        <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs text-sand-500 dark:text-sand-400">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-sand-100 dark:bg-espresso-800 font-medium text-sand-700 dark:text-sand-300 border border-sand-200 dark:border-espresso-700">
+            <File className="w-3 h-3 text-rose-500" /> PDF Document
           </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 font-medium text-slate-600 border border-slate-200/60">
-            <ImageIcon className="w-3 h-3 text-blue-500" /> PNG / JPG / JPEG
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-sand-100 dark:bg-espresso-800 font-medium text-sand-700 dark:text-sand-300 border border-sand-200 dark:border-espresso-700">
+            <ImageIcon className="w-3 h-3 text-amber-600" /> PNG / JPG / JPEG
           </span>
-          <span className="text-slate-400 font-normal">Max size: 25 MB</span>
+          <span className="text-sand-400 dark:text-sand-500 font-normal">Max size: 25 MB</span>
         </div>
       </div>
     </div>

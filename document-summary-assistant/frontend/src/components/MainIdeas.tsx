@@ -9,29 +9,29 @@ export default function MainIdeas({ mainIdeas }: MainIdeasProps) {
   if (!mainIdeas || mainIdeas.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm flex flex-col h-full">
+    <div className="bg-white dark:bg-espresso-900 rounded-2xl border border-sand-200 dark:border-espresso-700 p-6 shadow-sm flex flex-col h-full transition-colors">
       {/* Header */}
-      <div className="flex items-center space-x-2.5 pb-4 border-b border-slate-100 mb-4">
-        <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100">
+      <div className="flex items-center space-x-2.5 pb-4 border-b border-sand-100 dark:border-espresso-800 mb-4">
+        <div className="p-1.5 rounded-lg bg-brand-50 dark:bg-brand-950/80 text-brand-700 dark:text-brand-300 border border-brand-200/70 dark:border-brand-800/60">
           <Compass className="w-4 h-4" />
         </div>
         <div>
-          <h3 className="text-base font-bold text-slate-900">Main Ideas</h3>
-          <p className="text-xs text-slate-500">Major themes & core topics</p>
+          <h3 className="text-base font-bold text-sand-900 dark:text-sand-50">Main Ideas</h3>
+          <p className="text-xs text-sand-500 dark:text-sand-400">Core themes & topics</p>
         </div>
       </div>
 
       {/* Topics / Chips */}
       <div className="flex flex-wrap gap-2.5 flex-1 content-start">
         {mainIdeas.map((idea, index) => {
-          // Dynamic subtle color themes
+          // Curated warm beige, caramel, amber, bronze & sage chip palettes
           const colorStyles = [
-            'bg-brand-50 text-brand-800 border-brand-200/70 hover:bg-brand-100',
-            'bg-blue-50 text-blue-800 border-blue-200/70 hover:bg-blue-100',
-            'bg-violet-50 text-violet-800 border-violet-200/70 hover:bg-violet-100',
-            'bg-teal-50 text-teal-800 border-teal-200/70 hover:bg-teal-100',
-            'bg-indigo-50 text-indigo-800 border-indigo-200/70 hover:bg-indigo-100',
-            'bg-sky-50 text-sky-800 border-sky-200/70 hover:bg-sky-100',
+            'bg-brand-50 dark:bg-brand-950/60 text-brand-900 dark:text-brand-200 border-brand-200/80 dark:border-brand-800/70 hover:bg-brand-100 dark:hover:bg-brand-900',
+            'bg-amber-50 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 border-amber-200/80 dark:border-amber-800/70 hover:bg-amber-100 dark:hover:bg-amber-900',
+            'bg-sand-100 dark:bg-espresso-800 text-sand-800 dark:text-sand-200 border-sand-300 dark:border-espresso-700 hover:bg-sand-200 dark:hover:bg-espresso-750',
+            'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 border-emerald-200/80 dark:border-emerald-800/70 hover:bg-emerald-100 dark:hover:bg-emerald-900',
+            'bg-orange-50 dark:bg-orange-950/60 text-orange-900 dark:text-orange-200 border-orange-200/80 dark:border-orange-800/70 hover:bg-orange-100 dark:hover:bg-orange-900',
+            'bg-stone-100 dark:bg-stone-900/80 text-stone-800 dark:text-stone-200 border-stone-300 dark:border-stone-700 hover:bg-stone-200 dark:hover:bg-stone-850',
           ];
           const style = colorStyles[index % colorStyles.length];
 

@@ -48,11 +48,11 @@ export default function SummaryLengthSelector({
   disabled = false,
 }: SummaryLengthSelectorProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm space-y-4">
+    <div className="bg-white dark:bg-espresso-900 rounded-2xl border border-sand-200 dark:border-espresso-700 p-5 shadow-sm space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">Select Summary Length</h3>
-          <p className="text-xs text-slate-500">
+          <h3 className="text-sm font-semibold text-sand-900 dark:text-sand-100">Select Summary Length</h3>
+          <p className="text-xs text-sand-500 dark:text-sand-400">
             Choose the level of depth for the generated AI summary.
           </p>
         </div>
@@ -72,22 +72,24 @@ export default function SummaryLengthSelector({
               onClick={() => onChange(option.id)}
               className={`flex flex-col text-left p-3.5 rounded-xl border-2 transition-all relative ${
                 isSelected
-                  ? 'bg-brand-50/70 border-brand-600 shadow-sm ring-2 ring-brand-500/20'
-                  : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/60'
+                  ? 'bg-brand-50/80 dark:bg-brand-950/60 border-brand-600 dark:border-brand-500 shadow-sm ring-2 ring-brand-500/20'
+                  : 'bg-white dark:bg-espresso-850 border-sand-200 dark:border-espresso-700 hover:border-sand-300 dark:hover:border-espresso-600 hover:bg-sand-50/60 dark:hover:bg-espresso-800'
               } ${disabled || isLoading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="flex items-center justify-between w-full mb-1.5">
                 <div className="flex items-center space-x-2">
                   <div
                     className={`p-1.5 rounded-lg ${
-                      isSelected ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600'
+                      isSelected
+                        ? 'bg-brand-600 dark:bg-brand-500 text-white'
+                        : 'bg-sand-100 dark:bg-espresso-800 text-sand-600 dark:text-sand-400'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
                   </div>
                   <span
                     className={`text-sm font-semibold ${
-                      isSelected ? 'text-brand-900' : 'text-slate-800'
+                      isSelected ? 'text-brand-950 dark:text-brand-100' : 'text-sand-800 dark:text-sand-200'
                     }`}
                   >
                     {option.label}
@@ -95,13 +97,15 @@ export default function SummaryLengthSelector({
                 </div>
                 <span
                   className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
-                    isSelected ? 'bg-brand-200/60 text-brand-800' : 'bg-slate-100 text-slate-500'
+                    isSelected
+                      ? 'bg-brand-200 dark:bg-brand-900/80 text-brand-900 dark:text-brand-200'
+                      : 'bg-sand-100 dark:bg-espresso-800 text-sand-500 dark:text-sand-400'
                   }`}
                 >
                   {option.badge}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 leading-snug mt-0.5">
+              <p className="text-xs text-sand-500 dark:text-sand-400 leading-snug mt-0.5">
                 {option.description}
               </p>
             </button>
@@ -117,14 +121,14 @@ export default function SummaryLengthSelector({
           onClick={onGenerate}
           className={`w-full flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-xl font-semibold text-sm text-white shadow-md transition-all duration-200 ${
             disabled || isLoading
-              ? 'bg-slate-300 cursor-not-allowed shadow-none'
-              : 'bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 active:scale-[0.99] shadow-brand-500/25 hover:shadow-lg hover:shadow-brand-500/30'
+              ? 'bg-sand-300 dark:bg-espresso-800 cursor-not-allowed shadow-none text-sand-500'
+              : 'bg-gradient-to-r from-brand-600 via-brand-500 to-brand-700 hover:from-brand-500 hover:to-brand-600 active:scale-[0.99] shadow-brand-700/20 hover:shadow-lg hover:shadow-brand-600/30'
           }`}
         >
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Generating AI Summary...</span>
+              <span>Generating AI Summary in a Nutshell...</span>
             </>
           ) : (
             <>

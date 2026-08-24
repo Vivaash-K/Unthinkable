@@ -33,6 +33,28 @@ export default function App() {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [error, setError] = useState<AppError | null>(null);
 
+  // Dark mode state persisted in localStorage
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('nutshell_theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  // Apply dark mode class to HTML root
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('nutshell_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('nutshell_theme', 'light');
+    }
+  }, [darkMode]);
+
+  const handleToggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+  };
+
   // Initial health check
   useEffect(() => {
     checkHealth().then(setHealth);
@@ -134,9 +156,13 @@ export default function App() {
     stage === 'summarizing';
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-sand-50 dark:bg-espresso-950 text-sand-900 dark:text-sand-100 transition-colors duration-200">
       {/* Header Bar */}
-      <Header health={health} />
+      <Header
+        health={health}
+        darkMode={darkMode}
+        onToggleDarkMode={handleToggleDarkMode}
+      />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
@@ -157,12 +183,15 @@ export default function App() {
         {/* Step 1: Upload Dropzone (shown when no file is uploaded and not in completed results) */}
         {!fileInfo && !isProcessing && (
           <div className="space-y-6">
-            <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+            <div className="text-center max-w-2xl mx-auto mb-8 space-y-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-100 dark:bg-brand-950/80 text-brand-800 dark:text-brand-300 border border-brand-200 dark:border-brand-800/80">
+                <span>Intelligent Executive Synthesis</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-sand-950 dark:text-sand-50">
                 Transform any document into actionable insights
               </h2>
-              <p className="text-sm sm:text-base text-slate-600">
-                Upload PDFs, scanned documents, or images. Our engine extracts the text and produces
+              <p className="text-sm sm:text-base text-sand-600 dark:text-sand-400">
+                Upload PDFs, scanned documents, or images. Nutshell extracts the text and produces
                 concise, structured summaries with key takeaways in seconds.
               </p>
             </div>
@@ -220,10 +249,14 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white/60 py-6 text-center text-xs text-slate-500">
+      <footer className="border-t border-sand-200 dark:border-espresso-800 bg-sand-100/60 dark:bg-espresso-900/60 py-6 text-center text-xs text-sand-500 dark:text-sand-400 transition-colors">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>Document Summary Assistant • Production Quality AI Web App</span>
-          <span className="text-slate-400">PDF Parsing • Tesseract OCR • Structured Summarization</span>
+          <span className="font-medium text-sand-700 dark:text-sand-300">
+            Nutshell • AI Document Summary Assistant
+          </span>
+          <span className="text-sand-400 dark:text-sand-500">
+            PDF Parsing • High-Accuracy OCR • Multi-Tier AI Synthesis
+          </span>
         </div>
       </footer>
     </div>

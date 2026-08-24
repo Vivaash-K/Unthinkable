@@ -5,7 +5,6 @@ import {
   Trash2,
   RefreshCw,
   CheckCircle2,
-  Sparkles,
   Layers,
 } from 'lucide-react';
 import { UploadedFileInfo, ProcessResult } from '../types';
@@ -37,7 +36,7 @@ export default function FilePreview({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-espresso-900 rounded-2xl border border-sand-200 dark:border-espresso-700 p-5 shadow-sm hover:shadow-md transition-all">
       <input
         ref={replaceInputRef}
         type="file"
@@ -52,8 +51,8 @@ export default function FilePreview({
           <div
             className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${
               isPdf
-                ? 'bg-rose-50 text-rose-600 border border-rose-100'
-                : 'bg-blue-50 text-blue-600 border border-blue-100'
+                ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/60'
+                : 'bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/60'
             }`}
           >
             {isPdf ? <FileText className="w-6 h-6" /> : <ImageIcon className="w-6 h-6" />}
@@ -62,20 +61,20 @@ export default function FilePreview({
           <div className="min-w-0 flex-1">
             <div className="flex items-center space-x-2">
               <h3
-                className="text-base font-semibold text-slate-900 truncate"
+                className="text-base font-semibold text-sand-900 dark:text-sand-100 truncate"
                 title={fileInfo.originalName}
               >
                 {fileInfo.originalName}
               </h3>
               {processResult?.hasExtractedText && (
-                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60">
                   <CheckCircle2 className="w-3 h-3" /> Extracted
                 </span>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-500">
-              <span className="font-medium text-slate-600 uppercase tracking-wider">
+            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-sand-500 dark:text-sand-400">
+              <span className="font-medium text-sand-700 dark:text-sand-300 uppercase tracking-wider">
                 {isPdf ? 'PDF Document' : 'Image File'}
               </span>
               <span>•</span>
@@ -91,7 +90,7 @@ export default function FilePreview({
                     </>
                   )}
                   {processResult.ocrApplied && (
-                    <span className="inline-flex items-center gap-0.5 text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60 text-[11px] font-medium">
+                    <span className="inline-flex items-center gap-0.5 text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800/60 text-[11px] font-medium">
                       <Layers className="w-3 h-3" /> OCR
                     </span>
                   )}
@@ -107,10 +106,10 @@ export default function FilePreview({
             type="button"
             disabled={disabled}
             onClick={() => replaceInputRef.current?.click()}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 disabled:opacity-50 transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-sand-700 dark:text-sand-200 bg-sand-100 dark:bg-espresso-800 hover:bg-sand-200 dark:hover:bg-espresso-700 active:bg-sand-300 disabled:opacity-50 transition border border-sand-200 dark:border-espresso-700"
             title="Replace with another document"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+            <RefreshCw className="w-3.5 h-3.5 text-sand-500 dark:text-sand-400" />
             <span>Replace</span>
           </button>
 
@@ -118,7 +117,7 @@ export default function FilePreview({
             type="button"
             disabled={disabled}
             onClick={onRemove}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 active:bg-rose-200 disabled:opacity-50 transition border border-rose-200/60"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 dark:hover:bg-rose-900 active:bg-rose-200 disabled:opacity-50 transition border border-rose-200/80 dark:border-rose-800/60"
             title="Remove uploaded document"
           >
             <Trash2 className="w-3.5 h-3.5" />
