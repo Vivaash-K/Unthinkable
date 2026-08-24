@@ -7,8 +7,9 @@ import {
   HealthStatus,
 } from '../types';
 
-// Use relative /api if served via proxy or Vite dev server, otherwise fallback to localhost:8000
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// API base URL from environment or local fallback (strips any accidental trailing slashes)
+const RAW_API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE = RAW_API_BASE.replace(/\/+$/, '');
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {

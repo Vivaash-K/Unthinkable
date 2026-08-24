@@ -71,6 +71,17 @@ def sanitize_filename(filename: str) -> str:
     return clean.strip('_') or f"doc_{uuid.uuid4().hex[:8]}"
 
 
+@app.get("/")
+async def root():
+    """Root endpoint for status check."""
+    return {
+        "status": "Document Summary Assistant Backend Running",
+        "docs": "/docs",
+        "health": "/api/health",
+        "version": "1.0.0"
+    }
+
+
 @app.get("/api/health", response_model=HealthResponse)
 async def health_check():
     """Health check and engine status endpoint."""
